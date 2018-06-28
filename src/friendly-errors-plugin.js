@@ -45,16 +45,17 @@ class FriendlyErrorsWebpackPlugin {
 
       if (!hasErrors && !hasWarnings) {
         this.displaySuccess(stats);
-        return;
+      } else {
+        if (hasErrors) {
+          this.displayErrors(extractErrorsFromStats(stats, 'errors'), 'error');
+        }
+        if (hasWarnings) {
+          this.displayErrors(extractErrorsFromStats(stats, 'warnings'), 'warning');
+        }
       }
 
-      if (hasErrors) {
-        this.displayErrors(extractErrorsFromStats(stats, 'errors'), 'error');
-        return;
-      }
-
-      if (hasWarnings) {
-        this.displayErrors(extractErrorsFromStats(stats, 'warnings'), 'warning');
+      if (!hasErrors) {
+        this.displayDone();
       }
     };
 
@@ -83,7 +84,9 @@ class FriendlyErrorsWebpackPlugin {
   displaySuccess(stats) {
     const time = isMultiStats(stats) ? this.getMultiStatsCompileTime(stats) : this.getStatsCompileTime(stats);
     output.title('success', 'DONE', 'Compiled successfully in ' + time + 'ms');
+  }
 
+  displayDone() {
     if (this.compilationSuccessInfo.messages) {
       this.compilationSuccessInfo.messages.forEach(message => output.info(message));
     }
